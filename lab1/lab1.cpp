@@ -1,5 +1,8 @@
 #include <iostream>
 #include <tuple>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
 
 long long pow_module(long long a, long long x, long long p) {
     long long result = 1;
@@ -46,16 +49,22 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
     return std::make_tuple(u1, u2, u3);
 }
 
-void test_gcd(){
+void test_gcd() {
     int a, b;
 
-    while(true){
-        std::cout << "Enter two positive integers a and b(a >= b): ";
+    while(true) {
+        std::cout << "Enter two positive integers a and b (a >= b) or enter '0 0' for random generation: ";
         std::cin >> a >> b;
-        if (a <= 0 || b <= 0 || a < b) {
-            std::cout << "Error." << std::endl;
+
+        if (a == 0 && b == 0) {
+            a = rand() % (1000000000 - 1000000 + 1) + 1000000;
+            b = rand() % (a - 1000000 + 1) + 1000000; // b <= a
+            std::cout << "Generated values: a = " << a << ", b = " << b << "\n";
         }
-        else break;
+        
+        if (a < 1 || b < 1 || a < b) {
+            std::cout << "Error. Please enter valid values." << std::endl;
+        } else break;
     }
 
     int gcd, x, y;
@@ -65,17 +74,44 @@ void test_gcd(){
     std::cout << "X = " << x << ", Y = " << y << std::endl;
 }
 
-void test_pow_module(){
+bool isPrime(int p) {
+    if (p <= 1) return false;
+    int limit = (int)pow(p,0.5);;
+    for (int i = 2; i <= limit; ++i) {
+        if (p % i == 0) return false;        
+    }
+    return true;  
+}
+
+int generateRandomPrime() {
+    int p;
+    do {
+        p = rand() % (1000000000 - 1000000 + 1) + 1000000; // выбираем случайное число от 10^6 до 10^9
+    } while (!isPrime(p));
+    return p;
+}
+
+void test_pow_module() {
     long long a, x, p;
-    std::cout << "Print a, x, p: ";
+    std::cout << "Print a, x, p or enter '0 0 0' for random generation: ";
     std::cin >> a >> x >> p;
+
+    if (a == 0 && x == 0 && p == 0) {
+        a = rand() % (1000000000 - 1000000 + 1) + 1000000;
+        x = rand() % (1000000000 - 1000000 + 1) + 1000000;
+        p = generateRandomPrime();
+        std::cout << "Generated values: a = " << a << ", x = " << x << ", p = " << p << "\n";
+    }
+
     long long result = pow_module(a, x, p);
     std::cout << "Result: " << result << std::endl;
 }
 
 int main() {
+    srand(static_cast<unsigned>(time(0))); 
     test_pow_module();
     std::cout << "---------------------------------------------------" << std::endl;
     test_gcd();
+    
     return 0;
 }
