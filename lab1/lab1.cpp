@@ -3,10 +3,11 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
+#include <algorithm> 
 
 long long pow_module(long long a, long long x, long long p) {
     long long result = 1;
-    a = a % p;  
+     
     if (a == 0) return 0; 
     if (p == 0 ) return 0;
     while (x > 0) {
@@ -48,7 +49,7 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
     }
     return std::make_tuple(u1, u2, u3);
 }
-
+ //a = a % p;
 void test_gcd() {
     int a, b;
 
@@ -83,11 +84,25 @@ bool isPrime(int p) {
     return true;  
 }
 
+bool testFerma(long long p, int k)
+{
+  if(p==2) return true;
+  if(p&1) return false;
+  for(int i=0; i<k; ++i)
+  {
+    long long a=rand()%(p-1)+1;
+    if(std::__gcd(a,p)!=1 || pow_module(a,p-1,p)!=1)
+      return false;
+  }
+  return true;
+}
+
 int generateRandomPrime() {
     int p;
     do {
-        p = rand() % (1000000000 - 1000000 + 1) + 1000000; // выбираем случайное число от 10^6 до 10^9
-    } while (!isPrime(p));
+        p = rand() % (1000000000 - 1000000 + 1) + 1000000; 
+    //} while (!isPrime(p));
+    } while(testFerma(p,100));
     return p;
 }
 
@@ -97,9 +112,11 @@ void test_pow_module() {
     std::cin >> a >> x >> p;
 
     if (a == 0 && x == 0 && p == 0) {
-        a = rand() % (1000000000 - 1000000 + 1) + 1000000;
-        x = rand() % (1000000000 - 1000000 + 1) + 1000000;
         p = generateRandomPrime();
+        a = rand() % (1000000000 - 1000000 + 1) + 1000000;
+        //x = rand() % (1000000000 - 1000000 + 1) + 1000000;
+        x = rand() % (p - 2) + 1;
+        //p = generateRandomPrime();
         std::cout << "Generated values: a = " << a << ", x = " << x << ", p = " << p << "\n";
     }
 
