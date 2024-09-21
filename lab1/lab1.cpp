@@ -124,11 +124,61 @@ void test_pow_module() {
     std::cout << "Result: " << result << std::endl;
 }
 
+void diffieHellman(int g, int p) {
+    int a = rand() % (1000000000 - 1000000 + 1) + 1000000; 
+    int b = rand() % (1000000000 - 1000000 + 1) + 1000000;
+
+    int publickeyA = pow_module(g, a, p); 
+    int publickeyB = pow_module(g, b, p); 
+
+    int sharedKeyA = pow_module(publickeyB, a, p); 
+    int sharedKeyB = pow_module(publickeyA, b, p); 
+
+    std::cout << "g: " << g << std::endl;
+    std::cout << "p: " << p << std::endl;
+
+    std::cout << "secret key Alice (a): " << a << std::endl;
+    std::cout << "secret key Bob (b): " << b << std::endl;
+
+    std::cout << "public key Alice (A): " << g << "^" << a << " mod " << p << " = " << publickeyA << std::endl;
+    std::cout << "public key Bob (B): " << g << "^" << b << " mod " << p << " = " << publickeyB << std::endl;
+
+    std::cout << "shared key Alice: " << publickeyB << "^" << a << " mod " << p << " = " << sharedKeyA << std::endl;
+    std::cout << "shared key Bob: " << publickeyA << "^" << a << " mod " << p << " = " << sharedKeyB << std::endl;
+}
+
+
+
+long long gen_g(long long p) {
+    long long phi = p - 1; // Функция Эйлера для простого числа P
+    for (long long g = 2; g < p; ++g) {
+        bool isPrimitive = true;
+        for (long long i = 1; i < phi; ++i) {
+            if (pow_module(g, i, p) == 1) {
+                isPrimitive = false;
+                break;
+            }
+        }
+        if (isPrimitive) {
+            return g;
+        }
+    }
+    return -1; // Не найден первообразный корень
+}
+
+void test_diffieHellman(){
+    long long q = generateRandomPrime();
+    long long p = 2*q +1;
+    long long g = gen_g(p);
+    diffieHellman(g, p);
+}
+
 int main() {
     srand(static_cast<unsigned>(time(0))); 
     test_pow_module();
     std::cout << "---------------------------------------------------" << std::endl;
     test_gcd();
-    
+    std::cout << "---------------------------------------------------" << std::endl;
+    test_diffieHellman();
     return 0;
 }
