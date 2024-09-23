@@ -4,6 +4,7 @@
 #include <ctime>
 #include <cmath>
 #include <algorithm> 
+#include <unordered_map>
 
 long long pow_module(long long a, long long x, long long p) {
     long long result = 1;
@@ -173,12 +174,57 @@ void test_diffieHellman(){
     diffieHellman(g, p);
 }
 
+long long giantBabyStep(const long long &a, const long long &p, const long long &y)
+{
+    long long m, k;
+    m = k = sqrt(p) + 1;
+    std::unordered_map<long long, long long> mp;
+    long long num = y % p;
+    mp[y] = 0;
+    for (int i = 1; i < m; ++i)
+    {
+        num = (num * a) % p;
+        mp[num] = i;
+    }
+    num = pow_module(a, m, p);
+    if (mp.count(num))
+    {
+        return m - mp[num];
+    }
+    long long step = num;
+    for (int i = 2; i <= k; ++i)
+    {
+        num = (num*step)%p;
+        if (mp.count(num))
+        {
+            return m * i - mp[num];
+        }
+    }
+    return -1;
+}
+
+
+void test_babyStepGiantStep() {
+    long long a, y, p;
+    std::cout << "Enter base (a), result (y), and prime modulus (p): ";
+    std::cin >> a >> y >> p;
+
+    long long result = giantBabyStep(a, y, p);
+    if (result != -1) {
+        std::cout << "Discrete logarithm x such that " << a << "^x"<< "mod" << p << " = " << y << " is " << result << std::endl;
+    } else {
+        std::cout << "No solution found." << std::endl;
+    }
+}
+
 int main() {
     srand(static_cast<unsigned>(time(0))); 
-    test_pow_module();
+    /*test_pow_module();
     std::cout << "---------------------------------------------------" << std::endl;
     test_gcd();
     std::cout << "---------------------------------------------------" << std::endl;
-    test_diffieHellman();
+    test_diffieHellman();*/
+    std::cout << "---------------------------------------------------" << std::endl;
+    test_babyStepGiantStep();
     return 0;
 }
