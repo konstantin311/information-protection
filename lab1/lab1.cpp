@@ -151,7 +151,7 @@ void diffieHellman(int g, int p) {
 
 
 long long gen_g(long long p) {
-    long long phi = p - 1; // Функция Эйлера для простого числа P
+    long long phi = p - 1; 
     for (long long g = 2; g < p; ++g) {
         bool isPrimitive = true;
         for (long long i = 1; i < phi; ++i) {
@@ -164,7 +164,7 @@ long long gen_g(long long p) {
             return g;
         }
     }
-    return -1; // Не найден первообразный корень
+    return -1; 
 }
 
 void test_diffieHellman(){
@@ -179,18 +179,21 @@ long long giantBabyStep(const long long &a, const long long &p, const long long 
     long long m, k;
     m = k = sqrt(p) + 1;
     std::unordered_map<long long, long long> mp;
-    long long num = y % p;
+    long long num = y;
     mp[y] = 0;
+
     for (int i = 1; i < m; ++i)
     {
         num = (num * a) % p;
         mp[num] = i;
     }
+
     num = pow_module(a, m, p);
     if (mp.count(num))
     {
         return m - mp[num];
     }
+
     long long step = num;
     for (int i = 2; i <= k; ++i)
     {
@@ -206,12 +209,12 @@ long long giantBabyStep(const long long &a, const long long &p, const long long 
 
 void test_babyStepGiantStep() {
     long long a, y, p;
-    std::cout << "Enter base (a), result (y), and prime modulus (p): ";
-    std::cin >> a >> y >> p;
+    std::cout << "Enter base (a), modulus (p), result (y) : ";
+    std::cin >> a >> p >> y;
 
-    long long result = giantBabyStep(a, y, p);
+    long long result = giantBabyStep(a, p, y);
     if (result != -1) {
-        std::cout << "Discrete logarithm x such that " << a << "^x"<< "mod" << p << " = " << y << " is " << result << std::endl;
+        std::cout << "Result: " << a << "^x"<< "mod" << p << " = " << y << "  x= " << result << std::endl;
     } else {
         std::cout << "No solution found." << std::endl;
     }
@@ -219,11 +222,11 @@ void test_babyStepGiantStep() {
 
 int main() {
     srand(static_cast<unsigned>(time(0))); 
-    /*test_pow_module();
+    test_pow_module();
     std::cout << "---------------------------------------------------" << std::endl;
     test_gcd();
     std::cout << "---------------------------------------------------" << std::endl;
-    test_diffieHellman();*/
+    test_diffieHellman();
     std::cout << "---------------------------------------------------" << std::endl;
     test_babyStepGiantStep();
     return 0;
