@@ -150,16 +150,16 @@ void diffieHellman(int g, int p) {
 
 
 
-long long gen_g(long long p) {
+long long gen_g(long long p, long long q) {
     long long phi = p - 1; 
     for (long long g = 2; g < p; ++g) {
         bool isPrimitive = true;
-        for (long long i = 1; i < phi; ++i) {
-            if (pow_module(g, i, p) == 1) {
+        //for (long long i = 1; i < phi; ++i) {
+            if (pow_module(g, q, p) == 1) {
                 isPrimitive = false;
                 break;
             }
-        }
+        //}
         if (isPrimitive) {
             return g;
         }
@@ -169,8 +169,15 @@ long long gen_g(long long p) {
 
 void test_diffieHellman(){
     long long q = generateRandomPrime();
-    long long p = 2*q +1;
-    long long g = gen_g(p);
+    long long p;
+    //long long q = generateRandomPrime();
+    //long long p = 2*q +1;
+    do{
+        q = generateRandomPrime();
+        p = 2*q +1;
+    }while(testFerma(p,100));
+    std::cout<<"q="<<q<<std::endl;
+    long long g = gen_g(p,q);
     diffieHellman(g, p);
 }
 
@@ -208,9 +215,16 @@ long long giantBabyStep(const long long &a, const long long &p, const long long 
 
 
 void test_babyStepGiantStep() {
-    long long a, y, p;
-    std::cout << "Enter base (a), modulus (p), result (y) : ";
-    std::cin >> a >> p >> y;
+    long long a, y, p, x;
+    //std::cout << "Enter base (a), modulus (p), result (y) : ";
+    //std::cin >> a >> p;
+    a = rand() % (10 -1 ) + 1;
+    do{
+        p = generateRandomPrime();
+    }while(testFerma(p,100));
+    x = rand() % (p - 2) + 1;
+    y = pow_module(a,x,p);
+    std::cout<<"a="<<a<<" x="<<x<<" y="<<y<<" p="<<p<<std::endl;
 
     long long result = giantBabyStep(a, p, y);
     if (result != -1) {
