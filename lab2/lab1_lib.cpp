@@ -39,8 +39,8 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
         v2 = t2; 
         v3 = t3;
 
-        /*std::cout << "UPDATE u: (" << u1 << ", " << u2 << ", " << u3 << ")" << std::endl;
-        std::cout << "UPDATE v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;*/
+        std::cout << "UPDATE u: (" << u1 << ", " << u2 << ", " << u3 << ")" << std::endl;
+        std::cout << "UPDATE v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;
     }
     return std::make_tuple(u1, u2, u3);
 }

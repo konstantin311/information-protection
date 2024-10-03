@@ -2,8 +2,30 @@
 #include <tuple>
 #include <random>
 #include <algorithm>
-#include "lab1_lib.hpp"
+#include <fstream>
+#include <vector>
+#include "lab1_lib.hpp"  // Assuming the necessary functions: extendedGCD(), generateRandomPrime(), pow_module()
 
+// Function to read a file into a vector of numbers
+std::vector<int> readFileAsNumbers(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary);
+    std::vector<int> data;
+    char byte;
+    while (file.get(byte)) {
+        data.push_back(static_cast<unsigned char>(byte));
+    }
+    return data;
+}
+
+// Function to write numbers to a file
+void writeNumbersToFile(const std::string& filename, const std::vector<int>& data) {
+    std::ofstream file(filename, std::ios::binary);
+    for (int number : data) {
+        file.put(static_cast<char>(number));
+    }
+}
+
+// Function to generate a secret key
 int generateSecretKey(int cA, int p) {
     int d, gcd, x, y;
     std::tie(gcd, x, y) = extendedGCD(cA, p - 1);
@@ -17,90 +39,114 @@ int generateSecretKey(int cA, int p) {
     }
 }
 
-
 int main() {
-    // Initialize random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(1000000, 1000000000);
 
-    // 1. Generate a random prime number p
+    // Generate a prime number p
     int p;
     std::cout << "Enter prime number p (or 0 to generate a random prime): ";
     std::cin >> p;
 
     if (p == 0) {
-        p = generateRandomPrime();
+        do {
+            p = dist(gen);
+        } while (!testFerma(p, 500)); 
         std::cout << "Generated prime number p: " << p << std::endl;
     }
 
-    // 2. Generate secret key cA
-    int cA;
-    std::cout << "Enter secret key A (cA) (or 0 to generate a random key): ";
-    std::cin >> cA;
-
-    if (cA == 0) {
-         cA = rand() % (p - 1) + 1; // Random number from 1 to p-1
-        std::cout << "Generated secret key A (cA): " << cA << std::endl;
-    }
-
-    // 3. Calculate dA as modular inverse of cA mod (p-1)
-    int dA = generateSecretKey(cA, p);
+    // Generate secret key A (cA) and dA
+    int cA, dA;
+    do {
+        cA = dist(gen); // Случайное число от 1 до p-1
+        dA = generateSecretKey(cA, p);
+    } while (dA == -1); // Продолжать, пока dA не будет валидным
+    std::cout << "Generated secret key A (cA): " << cA << std::endl;
     std::cout << "Secret key A (dA): " << dA << std::endl;
 
-    // 4. Generate secret keys B
-    int cB;
-    std::cout << "Enter secret key B (cB) (or 0 to generate a random key): ";
-    std::cin >> cB;
-
-    if (cB == 0) {
-        cB = rand() % (p - 1) + 1; // Random number from 1 to p-1
-        std::cout << "Generated secret key B (cB): " << cB << std::endl;
-    }
-
-    int dB = generateSecretKey(cB, p);
+    // Generate secret key B (cB) and dB
+    int cB, dB;
+    do {
+        cB = dist(gen); // Случайное число от 1 до p-1
+        dB = generateSecretKey(cB, p);
+    } while (dB == -1); // Продолжать, пока dB не будет валидным
+    std::cout << "Generated secret key B (cB): " << cB << std::endl;
     std::cout << "Secret key B (dB): " << dB << std::endl;
 
-    // 5. Input the message
-    int m;
-    std::cout << "Enter the message m: ";
-    std::cin >> m;
+    // Menu for choosing mode: number or file
+    int mode;
+    std::cout << "Choose mode: 1 - Number, 2 - File: ";
+    std::cin >> mode;
 
-    // 6. Check the message (m < p)
-    if (m >= p) {
-        std::cerr << "Message m must be less than p!" << std::endl;
-        return 1;
-    }
+    if (mode == 1) {
+        // Number mode
+        int m;
+        std::cout << "Enter message m (number): ";
+        std::cin >> m;
 
-    // 7. Encryption
-    int x1 = pow_module(m, cA, p);
+        // Check that m is less than p
+        if (m >= p) {
+            std::cerr << "Error: message must be less than p!" << std::endl;
+            return 1;
+        }
 
-    std::cout << "x1: " <<m<<"^"<<cA<<"mod "<<p<<" = "<< x1 << std::endl;
+        // Encryption
+        int x1 = pow_module(m, cA, p);
+        int x2 = pow_module(x1, cB, p);
+        std::cout << "Encrypted message: " << x2 << std::endl;
 
-    // 8. Transmit x1 to B
-    // ... (simulation of transmission)
+        // Decryption
+        int x3 = pow_module(x2, dA, p);
+        int x4 = pow_module(x3, dB, p);
+        std::cout << "Decrypted message: " << x4 << std::endl;
 
-    // 9. Decryption by B
-    int x2 = pow_module(x1, cB, p);
-    std::cout << "x2: " << x2 << std::endl;
+        if (x4 == m) {
+            std::cout << "Message successfully decrypted!" << std::endl;
+        } else {
+            std::cerr << "Decryption error!" << std::endl;
+        }
+    } else if (mode == 2) {
+        // File mode
+        std::string inputFileName;
+        std::cout << "Enter the file name for encryption: ";
+        std::cin >> inputFileName;
 
-    // 10. Transmit x2 to A
-    // ... (simulation of transmission)
+        // Read file
+        std::vector<int> message = readFileAsNumbers(inputFileName);
 
-    // 11. Decryption by A
-    int x3 = pow_module(x2, dA, p);
-    std::cout << "x3: " << x3 << std::endl;
+        // Encrypt file
+        std::vector<int> encryptedData;
+        for (int byte : message) {
+            if (byte >= p) {
+                std::cerr << "Error: byte " << byte << " is greater than or equal to p!" << std::endl;
+                return 1;
+            }
+            int x1 = pow_module(byte, cA, p);
+            int x2 = pow_module(x1, cB, p);
+            encryptedData.push_back(x2);
+        }
 
-    // 12. Transmit x3 to B
-    // ... (simulation of transmission)
+        // Write encrypted file
+        std::string encryptedFileName = "encrypted_" + inputFileName;
+        writeNumbersToFile(encryptedFileName, encryptedData);
+        std::cout << "Encrypted data written to file: " << encryptedFileName << std::endl;
 
-    // 13. Decryption by B
-    int x4 = pow_module(x3, dB, p);
-    std::cout << "x4: " << x4 << std::endl;
+        // Decrypt file
+        std::vector<int> decryptedData;
+        for (int byte : encryptedData) {
+            int x3 = pow_module(byte, dA, p);
+            int x4 = pow_module(x3, dB, p);
+            decryptedData.push_back(x4);
+        }
 
-    if (x4 == m) {
-        std::cout << "Message successfully decrypted!" << std::endl;
+        // Write decrypted file
+        std::string decryptedFileName = "decrypted_" + inputFileName;
+        writeNumbersToFile(decryptedFileName, decryptedData);
+        std::cout << "Decrypted data written to file: " << decryptedFileName << std::endl;
     } else {
-        std::cerr << "Decryption error!" << std::endl;
+        std::cerr << "Invalid mode selected!" << std::endl;
+        return 1;
     }
 
     return 0;
