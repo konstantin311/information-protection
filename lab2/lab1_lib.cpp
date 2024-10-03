@@ -19,9 +19,9 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
     int u1 = a, u2 = 1, u3 = 0;
     int v1 = b, v2 = 0, v3 = 1;
 
-    std::cout << "Start Evclid:" << std::endl;
+    /*std::cout << "Start Evclid:" << std::endl;
     std::cout << "u: (" << u1 << ", " << u2 << ", " << u3 << ")" << std::endl;
-    std::cout << "v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;
+    std::cout << "v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;*/
 
     while (v1 != 0) {
         int q = u1 / v1;
@@ -29,8 +29,8 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
         int t2 = u2 - q * v2;
         int t3 = u3 - q * v3;
 
-        std::cout << "q: " << q << std::endl;
-        std::cout << "t: (" << t1 << ", " << t2 << ", " << t3 << ")" << std::endl;
+        /*std::cout << "q: " << q << std::endl;
+        std::cout << "t: (" << t1 << ", " << t2 << ", " << t3 << ")" << std::endl;*/
 
         u1 = v1; 
         u2 = v2; 
@@ -39,10 +39,37 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
         v2 = t2; 
         v3 = t3;
 
-        std::cout << "UPDATE u: (" << u1 << ", " << u2 << ", " << u3 << ")" << std::endl;
-        std::cout << "UPDATE v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;
+        /*std::cout << "UPDATE u: (" << u1 << ", " << u2 << ", " << u3 << ")" << std::endl;
+        std::cout << "UPDATE v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;*/
     }
     return std::make_tuple(u1, u2, u3);
+}
+
+bool millerRabinTest(long long n, int iterations) {
+    if (n <= 1 || n == 4) return false;
+    if (n <= 3) return true;
+
+    // Найдем  s  и  r  такие, что  n - 1 = 2^s * r  и  r  нечетное
+    long long s = 0;
+    long long r = n - 1;
+    while (r % 2 == 0) {
+        s++;
+        r /= 2;
+    }
+
+    for (int i = 0; i < iterations; i++) {
+        long long a = rand() % (n - 2) + 2;
+        long long x = pow_module(a, r, n);
+
+        if (x == 1 || x == n - 1) continue;
+
+        for (int j = 1; j < s; j++) {
+            x = pow_module(x, 2, n);
+            if (x == n - 1) continue;
+        }
+        return false; // Не проходит тест Миллера-Рабина
+    }
+    return true; // Вероятно, простое
 }
 
 bool testFerma(long long p, int k)

@@ -4,11 +4,16 @@
 #include <algorithm>
 #include <fstream>
 #include <vector>
+#include <string>
+#include <stdexcept>
 #include "lab1_lib.hpp"  // Assuming the necessary functions: extendedGCD(), generateRandomPrime(), pow_module()
 
 // Function to read a file into a vector of numbers
 std::vector<int> readFileAsNumbers(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        throw std::runtime_error("Error: cannot open the file.");
+    }
     std::vector<int> data;
     char byte;
     while (file.get(byte)) {
@@ -20,6 +25,9 @@ std::vector<int> readFileAsNumbers(const std::string& filename) {
 // Function to write numbers to a file
 void writeNumbersToFile(const std::string& filename, const std::vector<int>& data) {
     std::ofstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        throw std::runtime_error("Error: cannot open the file to write.");
+    }
     for (int number : data) {
         file.put(static_cast<char>(number));
     }
@@ -51,32 +59,36 @@ int main() {
 
     if (p == 0) {
         do {
-            p = dist(gen);
-        } while (!testFerma(p, 500)); 
+            p = dist(gen); 
+        } while (!millerRabinTest(p, 100));
         std::cout << "Generated prime number p: " << p << std::endl;
     }
 
     // Generate secret key A (cA) and dA
     int cA, dA;
     do {
-        cA = dist(gen); // Случайное число от 1 до p-1
+        //cA = dist(gen); // Random number from 1 to p-1
+        cA = rand() % (p - 1) + 1;
+        std::cout << "Generated (cA): " << cA << std::endl;
         dA = generateSecretKey(cA, p);
-    } while (dA == -1); // Продолжать, пока dA не будет валидным
+    } while (dA == -1); // Continue until valid dA
     std::cout << "Generated secret key A (cA): " << cA << std::endl;
     std::cout << "Secret key A (dA): " << dA << std::endl;
 
     // Generate secret key B (cB) and dB
     int cB, dB;
     do {
-        cB = dist(gen); // Случайное число от 1 до p-1
+        //cB = dist(gen); // Random number from 1 to p-1
+        cB = rand() % (p - 1) + 1;
+        std::cout << "Generated (cB): " << cB << std::endl;
         dB = generateSecretKey(cB, p);
-    } while (dB == -1); // Продолжать, пока dB не будет валидным
+    } while (dB == -1); // Continue until valid dB
     std::cout << "Generated secret key B (cB): " << cB << std::endl;
     std::cout << "Secret key B (dB): " << dB << std::endl;
 
-    // Menu for choosing mode: number or file
+    // Menu for choosing mode: number, file, or image
     int mode;
-    std::cout << "Choose mode: 1 - Number, 2 - File: ";
+    std::cout << "Choose mode: 1 - Number, 2 - File, 3 - Image: ";
     std::cin >> mode;
 
     if (mode == 1) {
@@ -85,7 +97,6 @@ int main() {
         std::cout << "Enter message m (number): ";
         std::cin >> m;
 
-        // Check that m is less than p
         if (m >= p) {
             std::cerr << "Error: message must be less than p!" << std::endl;
             return 1;
@@ -106,16 +117,26 @@ int main() {
         } else {
             std::cerr << "Decryption error!" << std::endl;
         }
-    } else if (mode == 2) {
-        // File mode
+
+    } else if (mode == 2 || mode == 3) {
         std::string inputFileName;
-        std::cout << "Enter the file name for encryption: ";
+        if (mode == 2) {
+            std::cout << "Enter the file name for encryption: ";
+        } else {
+            std::cout << "Enter the image file name for encryption: ";
+        }
         std::cin >> inputFileName;
 
-        // Read file
-        std::vector<int> message = readFileAsNumbers(inputFileName);
+        // Read file or image
+        std::vector<int> message;
+        try {
+            message = readFileAsNumbers(inputFileName);
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+            return 1;
+        }
 
-        // Encrypt file
+        // Encrypt file or image
         std::vector<int> encryptedData;
         for (int byte : message) {
             if (byte >= p) {
@@ -127,12 +148,17 @@ int main() {
             encryptedData.push_back(x2);
         }
 
-        // Write encrypted file
+        // Write encrypted file or image
         std::string encryptedFileName = "encrypted_" + inputFileName;
-        writeNumbersToFile(encryptedFileName, encryptedData);
-        std::cout << "Encrypted data written to file: " << encryptedFileName << std::endl;
+        try {
+            writeNumbersToFile(encryptedFileName, encryptedData);
+            std::cout << "Encrypted data written to file: " << encryptedFileName << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+            return 1;
+        }
 
-        // Decrypt file
+        // Decrypt file or image
         std::vector<int> decryptedData;
         for (int byte : encryptedData) {
             int x3 = pow_module(byte, dA, p);
@@ -140,10 +166,15 @@ int main() {
             decryptedData.push_back(x4);
         }
 
-        // Write decrypted file
+        // Write decrypted file or image
         std::string decryptedFileName = "decrypted_" + inputFileName;
-        writeNumbersToFile(decryptedFileName, decryptedData);
-        std::cout << "Decrypted data written to file: " << decryptedFileName << std::endl;
+        try {
+            writeNumbersToFile(decryptedFileName, decryptedData);
+            std::cout << "Decrypted data written to file: " << decryptedFileName << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+            return 1;
+        }
     } else {
         std::cerr << "Invalid mode selected!" << std::endl;
         return 1;
