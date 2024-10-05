@@ -39,7 +39,7 @@ int generateSecretKey(int cA, int p) {
     }
 }
 
-int test_Shamir(){
+void test_Shamir(){
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(1000000, 1000000000);
@@ -85,7 +85,7 @@ int test_Shamir(){
 
         if (m >= p) {
             std::cerr << "Error: message must be less than p!" << std::endl;
-            return 1;
+            //return 1;
         }
 
 
@@ -117,14 +117,14 @@ int test_Shamir(){
             message = readFileAsNumbers(inputFileName);
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
-            return 1;
+           // return 1;
         }
 
         std::vector<int> encryptedData;
         for (int byte : message) {
             if (byte >= p) {
                 std::cerr << "Error: byte " << byte << " is greater than or equal to p!" << std::endl;
-                return 1;
+                //return 1;
             }
             int x1 = pow_module(byte, cA, p);
             int x2 = pow_module(x1, cB, p);
@@ -137,7 +137,7 @@ int test_Shamir(){
             std::cout << "Encrypted data written to file: " << encryptedFileName << std::endl;
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
-            return 1;
+            //return 1;
         }
 
         std::vector<int> decryptedData;
@@ -153,10 +153,10 @@ int test_Shamir(){
             std::cout << "Decrypted data written to file: " << decryptedFileName << std::endl;
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
-            return 1;
+            //return 1;
         }
     } else {
         std::cerr << "Invalid mode selected!" << std::endl;
-        return 1;
+        //return 1;
     }
 }

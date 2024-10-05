@@ -12,4 +12,4 @@ void writeNumbersToFile(const std::string& filename, const std::vector<int>& dat
 
 int generateSecretKey(int cA, int p);
 
-int test_Shamir();
+void test_Shamir();
