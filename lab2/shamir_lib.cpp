@@ -28,13 +28,18 @@ void writeNumbersToFile(const std::string& filename, const std::vector<int>& dat
 
 int generateSecretKey(int cA, int p) {
     int d, gcd, x, y;
-    std::tie(gcd, x, y) = extendedGCD(cA, p - 1);
-
+    std::tie(gcd, x, y) = extendedGCD(p-1, cA);
+    std::cout<<"gcd="<<gcd<<" x="<<x<<" y="<<y<<std::endl;
     if (gcd != 1) {
         std::cerr << "Error: cA and p-1 are not relatively prime!" << std::endl;
         return -1;
     } else {
-        d = (x % (p - 1) + (p - 1)) % (p - 1); // Convert to positive value
+        d = y;
+        std::cout<<"d = "<<d<<std::endl;
+        if(d < 0) {
+            std::cout<<"d = "<<d<<" + "<< p-1 << std::endl; 
+            d += (p-1);
+        }
         return d;
     }
 }
@@ -59,6 +64,7 @@ void test_Shamir(){
     int cA, dA;
     do {
         cA = rand() % (p - 1) + 1;
+        //std::cin >> cA;
         std::cout << "Generated (cA): " << cA << std::endl;
         dA = generateSecretKey(cA, p);
     } while (dA == -1); 
@@ -68,9 +74,10 @@ void test_Shamir(){
     int cB, dB;
     do {
         cB = rand() % (p - 1) + 1;
+        //std::cin >> cB;
         std::cout << "Generated (cB): " << cB << std::endl;
         dB = generateSecretKey(cB, p);
-    } while (dB == -1); // Continue until valid dB
+    } while (dB == -1); 
     std::cout << "Generated secret key B (cB): " << cB << std::endl;
     std::cout << "Secret key B (dB): " << dB << std::endl;
 
@@ -85,7 +92,6 @@ void test_Shamir(){
 
         if (m >= p) {
             std::cerr << "Error: message must be less than p!" << std::endl;
-            //return 1;
         }
 
 
@@ -117,14 +123,12 @@ void test_Shamir(){
             message = readFileAsNumbers(inputFileName);
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
-           // return 1;
         }
 
         std::vector<int> encryptedData;
         for (int byte : message) {
             if (byte >= p) {
                 std::cerr << "Error: byte " << byte << " is greater than or equal to p!" << std::endl;
-                //return 1;
             }
             int x1 = pow_module(byte, cA, p);
             int x2 = pow_module(x1, cB, p);
@@ -137,7 +141,6 @@ void test_Shamir(){
             std::cout << "Encrypted data written to file: " << encryptedFileName << std::endl;
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
-            //return 1;
         }
 
         std::vector<int> decryptedData;
@@ -153,10 +156,8 @@ void test_Shamir(){
             std::cout << "Decrypted data written to file: " << decryptedFileName << std::endl;
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
-            //return 1;
         }
     } else {
         std::cerr << "Invalid mode selected!" << std::endl;
-        //return 1;
     }
 }
