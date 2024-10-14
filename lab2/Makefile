@@ -8,7 +8,7 @@ CXX = g++
 CXXFLAGS = -Wall
 
 # Все исходные файлы
-SOURCES = lab2.cpp lab1_lib.cpp shamir_lib.cpp vernam_lib.cpp
+SOURCES = lab2.cpp lab1_lib.cpp shamir_lib.cpp vernam_lib.cpp gamal_lib.cpp
 
 # Объектные файлы (с заменой .cpp на .o)
 OBJECTS = $(SOURCES:.cpp=.o)

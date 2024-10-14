@@ -16,3 +16,5 @@ std::tuple<int, int, int> extendedGCD(int a, int b);
 bool testFerma(long long p, int k);
 
 int generateRandomPrime();
+
+long long gen_g(long long p, long long q);

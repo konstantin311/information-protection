@@ -72,6 +72,23 @@ bool millerRabinTest(long long n, int iterations) {
     return true; // Вероятно, простое
 }
 
+long long gen_g(long long p, long long q) {
+    long long phi = p - 1; 
+    for (long long g = 2; g < p; ++g) {
+        bool isPrimitive = true;
+        //for (long long i = 1; i < phi; ++i) {
+            if (pow_module(g, q, p) == 1) {
+                isPrimitive = false;
+                break;
+            }
+        //}
+        if (isPrimitive) {
+            return g;
+        }
+    }
+    return -1; 
+}
+
 bool testFerma(long long p, int k)
 {
   if(p==2) return true;
