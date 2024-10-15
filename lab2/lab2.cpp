@@ -3,6 +3,7 @@
 #include "shamir_lib.hpp"
 #include "vernam_lib.hpp"
 #include "gamal_lib.hpp"
+#include "rsa_lib.hpp"
 
 int main() {
     int code;
@@ -13,6 +14,10 @@ int main() {
     std::cout << "---------------------------------------------------" << std::endl;
     //test_gamal();
     std::cout << "---------------------------------------------------" << std::endl;
-    test_gamal_file_encryption();
+    //test_gamal_file_encryption();
+    std::cout << "---------------------------------------------------" << std::endl;
+    //test_rsa();
+    std::cout << "---------------------------------------------------" << std::endl;
+    test_rsa_file_encryption();
     return 0;
 }

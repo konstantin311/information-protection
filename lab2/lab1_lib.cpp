@@ -19,9 +19,9 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
     int u1 = a, u2 = 1, u3 = 0;
     int v1 = b, v2 = 0, v3 = 1;
 
-    std::cout << "Start Evclid:" << std::endl;
+    /*std::cout << "Start Evclid:" << std::endl;
     std::cout << "u: (" << u1 << ", " << u2 << ", " << u3 << ")" << std::endl;
-    std::cout << "v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;
+    std::cout << "v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;*/
 
     while (v1 != 0) {
         int q = u1 / v1;
@@ -29,8 +29,8 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
         int t2 = u2 - q * v2;
         int t3 = u3 - q * v3;
 
-        std::cout << "q: " << q << std::endl;
-        std::cout << "t: (" << t1 << ", " << t2 << ", " << t3 << ")" << std::endl;
+        /*std::cout << "q: " << q << std::endl;
+        std::cout << "t: (" << t1 << ", " << t2 << ", " << t3 << ")" << std::endl;*/
 
         u1 = v1; 
         u2 = v2; 
@@ -39,8 +39,8 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
         v2 = t2; 
         v3 = t3;
 
-        std::cout << "UPDATE u: (" << u1 << ", " << u2 << ", " << u3 << ")" << std::endl;
-        std::cout << "UPDATE v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;
+        /*std::cout << "UPDATE u: (" << u1 << ", " << u2 << ", " << u3 << ")" << std::endl;
+        std::cout << "UPDATE v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;*/
     }
     return std::make_tuple(u1, u2, u3);
 }

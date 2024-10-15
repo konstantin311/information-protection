@@ -61,13 +61,13 @@ void test_gamal(){
 // Функция для шифрования одного байта (или блока данных) с помощью Эль-Гамаля
 std::pair<long long, long long> encrypt_byte(long long byte, long long g, long long y, long long p, long long k) {
     long long a = pow_module(g, k, p);
-    long long b = (byte * pow_module(y, k, p)) % p;
+    long long b = (byte * pow_module(y, k, p));// % p;
     return {a, b};
 }
 
 // Функция для дешифрования одного блока данных с помощью Эль-Гамаля
 long long decrypt_byte(long long a, long long b, long long p, long long x) {
-    long long decrypted_byte = (b * pow_module(a, p - 1 - x, p)) % p;
+    long long decrypted_byte = (b * pow_module(a, p - 1 - x, p));// % p;
     return decrypted_byte;
 }
 

@@ -108,67 +108,7 @@ void test_Shamir(){
         } else {
             std::cerr << "Decryption error!" << std::endl;
         }
-    /*} else if (mode == 2 || mode == 3) {
-        std::string inputFileName;
-        if (mode == 2) {
-            std::cout << "Enter the file name for encryption: ";
-        } else {
-            std::cout << "Enter the image file name for encryption: ";
-        }
-        std::cin >> inputFileName;
 
-        std::vector<int> originalMessage;
-        try { originalMessage = readFileAsNumbers(inputFileName);
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            return; 
-        }
-
-        std::vector<int> encryptedData;
-        for (int byte : originalMessage) {
-            if (byte >= p) {
-                std::cerr << "Error: byte " << byte << " is greater than or equal to p!" << std::endl;
-            }
-            int x1 = pow_module(byte, cA, p);
-            int x2 = pow_module(x1, cB, p);
-            encryptedData.push_back(x2);
-        }
-
-        std::string encryptedFileName = "encrypted_" + inputFileName;
-        try {
-            writeNumbersToFile(encryptedFileName, encryptedData);
-            std::cout << "Encrypted data written to file: " << encryptedFileName << std::endl;
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            return; 
-        }
-        std::vector<int> encryptedMessage;
-        try {
-            encryptedMessage = readFileAsNumbers(encryptedFileName);
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            return; 
-        }
-
-        std::vector<int> decryptedData;
-        for (int byte : encryptedMessage) {
-            int x3 = pow_module(byte, dA, p);
-            int x4 = pow_module(x3, dB, p);
-            decryptedData.push_back(x4);
-        }
-
-        std::string decryptedFileName = "decrypted_" + inputFileName;
-        try {
-            writeNumbersToFile(decryptedFileName, decryptedData);
-            std::cout << "Decrypted data written to file: " << decryptedFileName << std::endl;
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            return; // Exit if there's an error writing to the file
-        }
-    } else {
-        std::cerr << "Invalid mode selected!" << std::endl;
-    }
-}*/
     } else if (mode == 2 || mode == 3) {
         std::string inputFileName;
         if (mode == 2) {
