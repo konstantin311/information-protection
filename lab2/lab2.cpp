@@ -16,8 +16,8 @@ int main() {
     std::cout << "---------------------------------------------------" << std::endl;
     //test_gamal_file_encryption();
     std::cout << "---------------------------------------------------" << std::endl;
-    //test_rsa();
+    test_rsa();
     std::cout << "---------------------------------------------------" << std::endl;
-    test_rsa_file_encryption();
+    //test_rsa_file_encryption();
     return 0;
 }

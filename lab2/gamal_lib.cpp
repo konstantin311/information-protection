@@ -58,20 +58,17 @@ void test_gamal(){
     std::cout<<"m_="<<b<<"*"<<a << "^" << p <<"- 1 -"<< x<< " mod " << p << " = " << b << std::endl;
 }
 
-// Функция для шифрования одного байта (или блока данных) с помощью Эль-Гамаля
 std::pair<long long, long long> encrypt_byte(long long byte, long long g, long long y, long long p, long long k) {
     long long a = pow_module(g, k, p);
     long long b = (byte * pow_module(y, k, p));// % p;
     return {a, b};
 }
 
-// Функция для дешифрования одного блока данных с помощью Эль-Гамаля
 long long decrypt_byte(long long a, long long b, long long p, long long x) {
     long long decrypted_byte = (b * pow_module(a, p - 1 - x, p));// % p;
     return decrypted_byte;
 }
 
-// Функция шифрования файла
 void encrypt_file(const std::string& input_file, const std::string& output_file, long long g, long long y, long long p) {
     std::ifstream in(input_file, std::ios::binary);
     std::ofstream out(output_file, std::ios::binary);
@@ -81,20 +78,18 @@ void encrypt_file(const std::string& input_file, const std::string& output_file,
         return;
     }
 
-    // Генератор случайных чисел для генерации нового k для каждого байта
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(1, p - 1); // k должен быть в диапазоне [1, p-1]
+    std::uniform_int_distribution<> distrib(1, p - 1); 
 
     char byte;
     while (in.get(byte)) {
-        // Генерация нового k для каждого байта
+        
         long long k = distrib(gen);
 
-        // Шифруем один байт (или блок данных)
+        
         auto encrypted_pair = encrypt_byte(static_cast<unsigned char>(byte), g, y, p, k);
 
-        // Записываем зашифрованные данные (a и b) в файл
         out.write(reinterpret_cast<char*>(&encrypted_pair.first), sizeof(long long));
         out.write(reinterpret_cast<char*>(&encrypted_pair.second), sizeof(long long));
     }
@@ -103,7 +98,6 @@ void encrypt_file(const std::string& input_file, const std::string& output_file,
     out.close();
 }
 
-// Функция дешифрования файла
 void decrypt_file(const std::string& input_file, const std::string& output_file, long long p, long long x) {
     std::ifstream in(input_file, std::ios::binary);
     std::ofstream out(output_file, std::ios::binary);
@@ -115,10 +109,8 @@ void decrypt_file(const std::string& input_file, const std::string& output_file,
 
     long long a, b;
     while (in.read(reinterpret_cast<char*>(&a), sizeof(long long)) && in.read(reinterpret_cast<char*>(&b), sizeof(long long))) {
-        // Дешифруем один блок данных
         char decrypted_byte = static_cast<char>(decrypt_byte(a, b, p, x));
 
-        // Записываем расшифрованный байт в файл
         out.put(decrypted_byte);
     }
 
@@ -130,7 +122,6 @@ void test_gamal_file_encryption() {
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    // Генерация q и p
     long long q, p;
     do {
         q = generateRandomPrime();
@@ -139,7 +130,6 @@ void test_gamal_file_encryption() {
 
     std::cout << "p = " << p << std::endl;
 
-    // Генерация g
     long long g = gen_g(p, q);
     std::cout << "g = " << g << std::endl;
 
@@ -149,13 +139,12 @@ void test_gamal_file_encryption() {
     std::cout << "private key (x) = " << x << std::endl;
     std::cout << "public key (y) = " << y << std::endl;
 
-    // Шифрование файла
+
     std::string input_file = "file.txt"; 
     //std::string encrypted_file1 = "encrypted_gamalll.txt"; 
     std::string encrypted_file = "encrypted_gamal.txt"; 
     encrypt_file(input_file, encrypted_file, g, y, p);
 
-    // Дешифрование файла
     std::string decrypted_file = "decrypted_gamal.txt"; 
     decrypt_file(encrypted_file, decrypted_file, p, x);
 }

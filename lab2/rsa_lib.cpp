@@ -5,17 +5,14 @@
 #include <random>
 #include <vector>
 
-// Функция для шифрования одного байта с помощью RSA
 long long rsa_encrypt_byte(long long byte, long long e, long long N) {
     return pow_module(byte, e, N);
 }
 
-// Функция для дешифрования одного байта с помощью RSA
 long long rsa_decrypt_byte(long long byte, long long d, long long N) {
     return pow_module(byte, d, N);
 }
 
-// Функция шифрования файла с помощью RSA
 void rsa_encrypt_file(const std::string& input_file, const std::string& output_file, long long e, long long N) {
     std::ifstream in(input_file, std::ios::binary);
     std::ofstream out(output_file, std::ios::binary);
@@ -35,7 +32,6 @@ void rsa_encrypt_file(const std::string& input_file, const std::string& output_f
     out.close();
 }
 
-// Функция дешифрования файла с помощью RSA
 void rsa_decrypt_file(const std::string& input_file, const std::string& output_file, long long d, long long N) {
     std::ifstream in(input_file, std::ios::binary);
     std::ofstream out(output_file, std::ios::binary);
@@ -55,31 +51,30 @@ void rsa_decrypt_file(const std::string& input_file, const std::string& output_f
     out.close();
 }
 
-// Функция для генерации ключей RSA
+
 std::pair<std::pair<long long, long long>, std::pair<long long, long long>> generate_rsa_keys(long long phi) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(2, phi - 1);
 
     while (true) {
-        long long e = distrib(gen);
+        long long c = distrib(gen);
         long long gcd, d, _;
-        std::tie(gcd, d, _) = extendedGCD(e, phi);
+        std::tie(gcd, d, _) = extendedGCD(c, phi);
         if (gcd == 1) {
             d %= phi;
             if (d < 0) {
                 d += phi;
             }
-            return std::make_pair(std::make_pair(e, phi), std::make_pair(d, phi)); // (e, phi) и (d, phi)
+            return std::make_pair(std::make_pair(c, phi), std::make_pair(d, phi)); // (e, phi) и (d, phi)
         }
     }
 }
 
-// Тестирование RSA с шифрованием и дешифрованием файла
 void test_rsa_file_encryption() {
-    long long N, e, d, p, q;
+    long long N, e, d, p, q, c;
 
-    // Генерация случайных простых чисел p и q
+
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(100, 10000);
@@ -94,29 +89,24 @@ void test_rsa_file_encryption() {
     } while (!millerRabinTest(q, 100));
     std::cout << "Generated prime number q: " << q << std::endl;
 
-    // Вычисление N и phi
     N = p * q;
     long long phi = (p - 1) * (q - 1);
     std::cout << "phi = " << phi << std::endl;
 
-    // Генерация ключей RSA
     auto keys = generate_rsa_keys(phi);
-    e = keys.first.first;
+    c = keys.first.first;
     d = keys.second.first;
 
-    // Вывод ключей
     std::cout << "Generated keys:" << std::endl;
-    std::cout << "Public key (N, e): (" << N << ", " << e << ")" << std::endl;
+    std::cout << "Public key (N, c): (" << N << ", " << e << ")" << std::endl;
     std::cout << "Private key (d): " << d << std::endl;
 
-    // Шифрование файла
     std::string input_file = "file.txt";
     std::string encrypted_file = "encrypted_rsa.txt";
-    rsa_encrypt_file(input_file, encrypted_file, e, N);
+    rsa_encrypt_file(input_file, encrypted_file, d, N);
 
-    // Дешифрование файла
     std::string decrypted_file = "decrypted_rsa.txt";
-    rsa_decrypt_file(encrypted_file, decrypted_file, d, N);
+    rsa_decrypt_file(encrypted_file, decrypted_file, c, N);
 }
 
 void test_rsa() {
@@ -155,11 +145,11 @@ void test_rsa() {
     std::cin >> message;
 
 
-    long long encryptedMessage = (pow_module(message, c, N));
+    long long encryptedMessage = (pow_module(message, d, N));
     std::cout << "Encrypted message: " << encryptedMessage << std::endl;
 
 
-    long long decryptedMessage = (pow_module(encryptedMessage, d, N));
+    long long decryptedMessage = (pow_module(encryptedMessage, c, N));
     std::cout << "The decrypted message: " << decryptedMessage << std::endl;
 }
 
