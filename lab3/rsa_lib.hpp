@@ -15,6 +15,8 @@ void rsa_decrypt_file(const std::string& input_file, const std::string& output_f
 // Функция для генерации ключей RSA
 std::pair<std::pair<long long, long long>, std::pair<long long, long long>> generate_rsa_keys(long long phi);
 
-void test_rsa_file_encryption();
+//void test_rsa_file_encryption();
 
 void test_rsa();
+
+void test_rsa_file_encryption(const std::string& input_file, const std::string& signature_file);

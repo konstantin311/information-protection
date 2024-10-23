@@ -100,7 +100,7 @@ std::pair<std::pair<long long, long long>, std::pair<long long, long long>> gene
     }
 }
 
-void test_rsa_file_encryption() {
+/*void test_rsa_file_encryption() {
     long long N, e, d, p, q, c;
 
 
@@ -136,7 +136,73 @@ void test_rsa_file_encryption() {
 
     std::string decrypted_file = "decrypted_rsa.txt";
     rsa_decrypt_file(encrypted_file, decrypted_file, c, N);
+}*/
+
+void test_rsa_file_encryption(const std::string& input_file, const std::string& signed_file) {
+    long long N, e, d, p, q, c;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(100, 10000);
+
+    do {
+        p = dist(gen);
+    } while (!millerRabinTest(p, 100));
+    std::cout << "Generated prime number p: " << p << std::endl;
+
+    do {
+        q = dist(gen);
+    } while (!millerRabinTest(q, 100));
+    std::cout << "Generated prime number q: " << q << std::endl;
+
+    N = p * q;
+    long long phi = (p - 1) * (q - 1);
+    std::cout << "phi = " << phi << std::endl;
+
+    auto keys = generate_rsa_keys(phi);
+    c = keys.first.first; 
+    d = keys.second.first;
+
+    std::cout << "Generated keys:" << std::endl;
+    std::cout << "Public key (N, c): (" << N << ", " << c << ")" << std::endl;
+    std::cout << "Private key (d): " << d << std::endl;
+
+    // Чтение документа из файла
+    std::ifstream in(input_file);
+    if (!in) {
+        std::cerr << "Error opening input file!" << std::endl;
+        return;
+    }
+
+    std::string document((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    in.close();
+
+    // Подписание документа
+    long long signature = sign_document(document, c, N);
+    std::cout << "Signature: " << signature << std::endl;
+
+    // Сохранение подписанного документа в файл
+    std::ofstream out(signed_file);
+    if (!out) {
+        std::cerr << "Error opening signed file!" << std::endl;
+        return;
+    }
+
+    out << document << std::endl; // Сохранение документа
+    out << "Signature: " << signature << std::endl; // Сохранение подписи
+    out.close();
+
+    std::cout << "Signed document saved to " << signed_file << std::endl;
+
+    bool is_valid = verify_signature(document, signature, d, N);
+    if (is_valid) {
+        std::cout << "h = e good!" << std::endl;
+    } else {
+        std::cout << "h != e bad!" << std::endl;
+    }
 }
+
+
 
 void test_rsa() {
     long long N, e, d, p, q, c;
