@@ -1,5 +1,5 @@
 # Имя выходного файла
-OUTPUT = lab2
+OUTPUT = lab3
 
 # Компилятор
 CXX = g++
@@ -8,7 +8,7 @@ CXX = g++
 CXXFLAGS = -Wall
 
 # Все исходные файлы
-SOURCES = lab2.cpp lab1_lib.cpp rsa_lib.cpp
+SOURCES = md5.cpp lab3.cpp lab1_lib.cpp rsa_lib.cpp gamal_lib.cpp 
 
 # Объектные файлы (с заменой .cpp на .o)
 OBJECTS = $(SOURCES:.cpp=.o)
