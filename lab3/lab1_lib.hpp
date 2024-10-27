@@ -6,6 +6,7 @@
 #include <cmath>
 #include <algorithm> 
 #include <unordered_map>
+#include <random>
 
 long long pow_module(long long a, long long x, long long p);
 
@@ -18,3 +19,9 @@ bool testFerma(long long p, int k);
 int generateRandomPrime();
 
 long long gen_g(long long p, long long q);
+
+int findCoprime(int phi);
+
+long long mod(long long a, long long b);
+
+int modularInverse(int a, int m);

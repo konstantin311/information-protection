@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
-//#include "shamir_lib.hpp"
 #include <fstream>
 #include <vector>
 #include <iostream>
@@ -15,12 +14,4 @@
 #include "md5.hpp"
 void test_gamal();
 
-std::pair<long long, long long> encrypt_byte(long long byte, long long g, long long y, long long p, long long k);
-
-long long decrypt_byte(long long a, long long b, long long p, long long x);
-
-void encrypt_file(const std::string& input_file, const std::string& output_file, long long g, long long y, long long p);
-
-void decrypt_file(const std::string& input_file, const std::string& output_file, long long p, long long x);
-
-void test_gamal_file_encryption();
+std::vector<unsigned char> hash_to_byte_array(const std::string& document);

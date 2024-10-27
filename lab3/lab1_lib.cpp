@@ -15,6 +15,8 @@ long long pow_module(long long a, long long x, long long p) {
     return result;
 }
 
+
+
 std::tuple<int, int, int> extendedGCD(int a, int b) {
     int u1 = a, u2 = 1, u3 = 0;
     int v1 = b, v2 = 0, v3 = 1;
@@ -43,6 +45,40 @@ std::tuple<int, int, int> extendedGCD(int a, int b) {
         std::cout << "UPDATE v: (" << v1 << ", " << v2 << ", " << v3 << ")" << std::endl;*/
     }
     return std::make_tuple(u1, u2, u3);
+}
+
+long long mod(long long a, long long b)
+{
+    if (b < 0)
+        return -mod(-a, -b);
+    int ret = a % b;
+    if (ret < 0)
+        ret += b;
+    return ret;
+}
+
+int findCoprime(int phi) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(2, phi - 1); 
+
+    while (true) {
+        int candidate = distrib(gen);
+        int gcd, x, y;
+        std::tie(gcd, x, y) = extendedGCD(candidate, phi);
+
+        if (gcd == 1) { 
+            return candidate;
+        }
+    }
+}
+
+int modularInverse(int a, int m) {
+    auto [gcd, x, y] = extendedGCD(a, m);
+    if (gcd != 1) {
+        throw std::invalid_argument("error inversion");
+    }
+    return (x % m + m) % m;
 }
 
 bool millerRabinTest(long long n, int iterations) {
@@ -76,12 +112,12 @@ long long gen_g(long long p, long long q) {
     long long phi = p - 1; 
     for (long long g = 2; g < p; ++g) {
         bool isPrimitive = true;
-        //for (long long i = 1; i < phi; ++i) {
-            if (pow_module(g, q, p) == 1) {
+        for (long long i = 1; i < phi; ++i) {
+            if (pow_module(g, i, p) == 1) {
                 isPrimitive = false;
                 break;
             }
-        //}
+        }
         if (isPrimitive) {
             return g;
         }

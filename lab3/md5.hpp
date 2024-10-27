@@ -21,6 +21,7 @@ public:
     std::string hexdigest() const;
     friend std::ostream& operator<<(std::ostream&, MD5 md5);
 
+    std::vector<long long> HashToVector(const std::string& hexHash);
 private:
     void init();
     typedef unsigned char uint1; //  8bit
@@ -50,5 +51,7 @@ private:
 };
 
 std::string md5(const std::string& str);
-
+std::string HexToBin(const std::string& hexHash); 
+/*long long* HashToArray(const std::string& hexHash);
+long long* HashToArray(const std::string& hexHash);*/
 #endif // MD5_H

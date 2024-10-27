@@ -347,7 +347,7 @@ std::string HexToBin(const std::string& hexNumber){
     return  binNumber;
 }
 
-std::vector<long long> HashToVector(const std::string& hexHash){
+/*std::vector<long long> HashToVector(const std::string& hexHash){
     std::vector<long long> res(8);
     std::string binHash = HexToBin(hexHash);
     for (size_t i=0; i<8; ++i){
@@ -363,4 +363,4 @@ long long* HashToArray(const std::string& hexHash){
         res[i] = (std::bitset<16>(binHash.substr(i*16,16)).to_ulong());
     }
     return res;
-}
+}*/

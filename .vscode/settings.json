@@ -56,6 +56,11 @@
         "vector": "cpp",
         "xhash": "cpp",
         "fstream": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "bitset": "cpp",
+        "map": "cpp",
+        "sstream": "cpp",
+        "xtree": "cpp",
+        "iomanip": "cpp"
     }
 }
