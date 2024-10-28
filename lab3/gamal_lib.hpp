@@ -1,3 +1,5 @@
+#include "lab1_lib.hpp"
+#include "md5.hpp"
 #include <tuple>
 #include <random>
 #include <algorithm>
@@ -10,8 +12,14 @@
 #include <iostream>
 #include <random>
 
-#include "lab1_lib.hpp"
-#include "md5.hpp"
-void test_gamal();
+std::vector<long long> HashToVector(const std::string& hexHash);
 
-std::vector<unsigned char> hash_to_byte_array(const std::string& document);
+long long* HashToArray(const std::string& hexHash);
+
+void saveSignature(long long r, const std::vector<long long>& s);
+
+bool loadAndVerifySignature(long long y, long long g, long long p);
+
+std::string loadMessage(const std::string& filename);
+
+void test_gamal();

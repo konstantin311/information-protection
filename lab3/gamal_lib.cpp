@@ -7,6 +7,7 @@
 #include <random>
 #include <iomanip>
 
+
 std::vector<long long> HashToVector(const std::string& hexHash){
     std::vector<long long> res(8);
     std::string binHash = HexToBin(hexHash);
@@ -26,29 +27,64 @@ long long* HashToArray(const std::string& hexHash){
 }
 
 void saveSignature(long long r, const std::vector<long long>& s) {
-    std::ofstream outFile("signature.txt");
+    std::ofstream outFile("signature_gamal.txt");
     if (outFile.is_open()) {
-        outFile << r << std::endl;
-        for (const auto& value : s) {
+        outFile << r << std::endl; 
+        for (const auto& value : s) { 
             outFile << value << " ";
         }
         outFile.close();
     } else {
-        std::cerr << "error" << std::endl;
+        std::cerr << "Error: could not open signature.txt" << std::endl;
     }
 }
 
-void loadSignature(long long& r, std::vector<long long>& s) {
-    std::ifstream inFile("signature.txt");
+bool loadAndVerifySignature(long long y, long long g, long long p) {
+    std::ifstream inFile("signature_gamal.txt");
+    long long r;
+    std::vector<long long> s;
+
     if (inFile.is_open()) {
-        inFile >> r;
+        if (!(inFile >> r)) {
+            std::cerr << "Error reading r from signature.txt" << std::endl;
+            return false;
+        }
+
         long long value;
         while (inFile >> value) {
             s.push_back(value);
         }
         inFile.close();
+
+        if (s.empty()) {
+            std::cerr << "Error: no values loaded into s" << std::endl;
+            return false;
+        }
     } else {
-        std::cerr << "error" << std::endl;
+        std::cerr << "Error: could not open signature.txt" << std::endl;
+        return false;
+    }
+
+    // Чтение исходного текста из file.txt
+    std::string document = loadMessage("signature_rsa.txt");
+
+    std::string hashHex = md5(document);
+    std::vector<long long> hash_vt = HashToVector(hashHex);
+
+    std::vector<long long> left;
+    std::vector<long long> right;
+
+    for (size_t i = 0; i < s.size(); ++i) {
+        left.push_back((pow_module(y, r, p) * pow_module(r, s[i], p)) % p);
+        right.push_back(pow_module(g, hash_vt[i], p));
+    }
+
+    if (left == right) {
+        std::cout << "Verification successful!" << std::endl;
+        return true;
+    } else {
+        std::cout << "Verification failed." << std::endl;
+        return false;
     }
 }
 
@@ -94,7 +130,6 @@ void test_gamal() {
     std::cout << "r = " << r << std::endl;
     std::cout << g << "^" << k << " mod " << p << " = " << r << std::endl;
 
-    // Load the message from a file
     std::string document = loadMessage("file.txt");
     std::string hashHex = md5(document);
     std::vector<long long> hash_vt = HashToVector(hashHex);
@@ -112,47 +147,13 @@ void test_gamal() {
         s.push_back(((negK % (p - 1)) * (u % (p - 1))) % (p - 1));
     }
 
-    // Save the signature (r, s)
     saveSignature(r, s);
-
-    std::vector<long long> left;
-    std::vector<long long> right;
-    for (auto &it : hash_vt) {   
-        right.push_back(pow_module(g, it, p));
-    }
-    std::cout << std::endl;
-
-    for (auto &it : s) {   
-        left.push_back(((pow_module(y, r, p) % p) * (pow_module(r, it, p) % p) % p));
-    }
-
-    if (right == left) {
-        std::cout << "good!" << std::endl;
+    //sleep(15);
+    bool isVerified = loadAndVerifySignature(y, g, p);
+    if (isVerified) {
+        std::cout << "Signature verified successfully!" << std::endl;
     } else {
-        std::cout << "bad!" << std::endl;
+        std::cout << "Signature verification failed." << std::endl;
     }
 
-    // Load the signature to verify
-    long long loadedR;
-    std::vector<long long> loadedS;
-    loadSignature(loadedR, loadedS);
-
-    // Verify the signature
-    std::cout << "Loaded r: " << loadedR << std::endl;
-    std::cout << "Loaded s: ";
-    for (const auto& value : loadedS) {
-        std::cout << value << " ";
-    }
-    std::cout << std::endl;
-
-    std::vector<long long> loadedLeft;
-    for (auto &it : loadedS) {   
-        loadedLeft.push_back(((pow_module(y, loadedR, p) % p) * (pow_module(loadedR, it, p) % p) % p));
-    }
-
-    if (right == loadedLeft) {
-        std::cout << "Loaded signature is valid!" << std::endl;
-    } else {
-        std::cout << "Loaded signature is invalid!" << std::endl;
-    }
 }
