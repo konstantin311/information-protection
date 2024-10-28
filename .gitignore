@@ -7,5 +7,6 @@
 /lab2/*.exe
 /lab3/*.o
 /lab3/*.txt
+/lab3/*.exe
 /lab3/*.jpg
 .vscode
