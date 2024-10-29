@@ -65,8 +65,7 @@ bool loadAndVerifySignature(long long y, long long g, long long p) {
         return false;
     }
 
-    // Чтение исходного текста из file.txt
-    std::string document = loadMessage("signature_rsa.txt");
+    std::string document = loadMessage("file.txt");
 
     std::string hashHex = md5(document);
     std::vector<long long> hash_vt = HashToVector(hashHex);
