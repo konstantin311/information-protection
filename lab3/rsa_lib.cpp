@@ -103,11 +103,11 @@ void test_rsa_signature() {
     std::string document = loadMessage("file.txt");
     std::string hashHex = md5(document);
     std::vector<long long> hash_vt = HashToVector(hashHex);
-    std::cout <<"Hash:";
+    std::cout <<"Hash: ";
     for (const long long& value : hash_vt) {
         std::cout << value << " ";
     }
-    std::cout <<"\nS:";
+    std::cout <<"\nS: ";
     std::vector<long long> signatures;
     for (const long long& value : hash_vt) {
         long long s = pow_module(value, c, N);  
