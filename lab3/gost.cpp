@@ -60,21 +60,42 @@ bool loadAndVerifySignatureGost(long long y, long long g, long long p) {
 void test_gost() {
     std::random_device rd;
     std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(32768, 65535);
     long long q; 
     long long p;
-    do {
+    int b;
+    std::uniform_int_distribution<> dist2(2, 10000);
+    do{
         do {
-            q = generateRandomPrime();
+        q = dist(gen);
         } while (!millerRabinTest(q, 100));
-        p = 2 * q + 1;
-    } while (!millerRabinTest(p, 100));
-
-    long long g = gen_g(p, q);
+        b = dist2(gen);
+        p = b * q + 1;
+    }while(!millerRabinTest(p, 100));
     std::cout << "q = " << q << std::endl;
     std::cout << "p = " << p << std::endl;
-    std::cout << "g = " << g << std::endl;
+    
+    long long g, a = 0;
+    std::uniform_int_distribution<> dist3(1, p - 1);
+    do{
+        do{
+            g = dist3(gen);
+            a = pow_module(g,b,p);
+        }while(a<=1);
+        std::cout << "a = " << a << std::endl;
+    }while(pow_module(a,q,p)!=1); //todo
 
-    std::uniform_int_distribution<> distrib(1, p - 1);
+    std::cout << "g = " << g << std::endl;
+    std::cout << "a = " << a << std::endl;
+
+    std::uniform_int_distribution<> distx(1, q);
+    long long x = distx(gen);
+    long long y = pow_module(a, x, p);
+    std::cout << "x = " << x << std::endl;
+    std::cout << "y = " << y << std::endl;
+
+
+    /*std::uniform_int_distribution<> distrib(1, p - 1);
     long long x = distrib(gen);
     std::cout << "x = " << x << std::endl;
     long long y = pow_module(g, x, p);
@@ -111,6 +132,6 @@ void test_gost() {
         std::cout << "Signature verified successfully!" << std::endl;
     } else {
         std::cout << "Signature verification failed." << std::endl;
-    }
+    }*/
 
 }
