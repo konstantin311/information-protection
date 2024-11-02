@@ -83,30 +83,16 @@ void test_gost() {
             a = pow_module(g,b,p);
         }while(a<=1);
         std::cout << "a = " << a << std::endl;
-    }while(pow_module(a,q,p)!=1); //todo
+    }while(pow_module(a,q,p)!=1); 
 
     std::cout << "g = " << g << std::endl;
     std::cout << "a = " << a << std::endl;
 
-    std::uniform_int_distribution<> distx(1, q);
-    long long x = distx(gen);
+    std::uniform_int_distribution<> dist4(1, q);
+    long long x = dist4(gen);
     long long y = pow_module(a, x, p);
     std::cout << "x = " << x << std::endl;
     std::cout << "y = " << y << std::endl;
-
-
-    /*std::uniform_int_distribution<> distrib(1, p - 1);
-    long long x = distrib(gen);
-    std::cout << "x = " << x << std::endl;
-    long long y = pow_module(g, x, p);
-    std::cout << "y = " << y << std::endl;
-
-    long long k = findCoprime(p - 1);
-    std::cout << "k = " << k << std::endl;
-
-    long long r = pow_module(g, k, p);
-    std::cout << "r = " << r << std::endl;
-    std::cout << g << "^" << k << " mod " << p << " = " << r << std::endl;
 
     std::string document = loadMessage("file.txt");
     std::string hashHex = md5(document);
@@ -116,22 +102,30 @@ void test_gost() {
         std::cout << value << " ";
     }
 
+    long long k = 0;
+    long long r = 0;
     std::vector<long long> s;
-    long long negK = modularInverse(k, p - 1);
-    std::cout << "\nnegK = " << negK << std::endl;
+    bool notzero = true;
+    do {
+        s.clear();
+        do {
+            k = dist4(gen);
+            r = pow_module(a, k, p) % q;
+        } while (r == 0);
 
-    for (auto &it : hash_vt) {
-        long long u = mod(it - x * r, p - 1);
-        s.push_back(((negK % (p - 1)) * (u % (p - 1))) % (p - 1));
+        notzero = true;
+        for (const auto& it : hash_vt) {
+            long long s_value = (k * it + x * r) % q;
+            s.push_back(s_value);
+            if (s_value == 0) {
+                notzero = false;
+            }
+        }
+    } while (!notzero); 
+    
+    std::cout << "\nk = " << k << std::endl;
+    std::cout << "r = " << r << std::endl;
+    for (const auto& it : s) {
+        std::cout << it << " ";
     }
-
-    saveSignature(r, s);
-    //sleep(15);
-    bool isVerified = loadAndVerifySignature(y, g, p);
-    if (isVerified) {
-        std::cout << "Signature verified successfully!" << std::endl;
-    } else {
-        std::cout << "Signature verification failed." << std::endl;
-    }*/
-
 }
