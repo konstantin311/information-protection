@@ -7,16 +7,30 @@
 #include <iostream>
 #include <random>
 #include <iomanip>
+//#include <unistd.h>
 
 
-bool loadAndVerifySignatureGost(long long y, long long g, long long p) {
-    std::ifstream inFile("signature_gamal.txt");
+void saveSignatureGost(long long r, const std::vector<long long>& s) {
+    std::ofstream outFile("signature_gost.txt");
+    if (outFile.is_open()) {
+        outFile << r << std::endl; 
+        for (const auto& value : s) { 
+            outFile << value << " ";
+        }
+        outFile.close();
+    } else {
+        std::cerr << "Error: could not open signature.txt" << std::endl;
+    }
+}
+
+bool loadAndVerifySignatureGost(long long y, long long g, long long p, long long q, long long a) {
+    std::ifstream inFile("signature_gost.txt");
     long long r;
     std::vector<long long> s;
 
     if (inFile.is_open()) {
         if (!(inFile >> r)) {
-            std::cerr << "Error reading r from signature.txt" << std::endl;
+            std::cerr << "Error reading r from signature_gost.txt" << std::endl;
             return false;
         }
 
@@ -36,23 +50,45 @@ bool loadAndVerifySignatureGost(long long y, long long g, long long p) {
     }
 
     std::string document = loadMessage("file.txt");
-
     std::string hashHex = md5(document);
     std::vector<long long> hash_vt = HashToVector(hashHex);
 
-    std::vector<long long> left;
-    std::vector<long long> right;
+    if (r <= 0 || r >= q) {
+        std::cerr << "Error: r is out of range (0 < r < q)" << r <<" "<< q << std::endl;
+        return false;
+    }
+    for (const auto& si : s) {
+        if (si <= 0 || si >= q) {
+            std::cerr << "Error: s is out of range (0 < s < q)" << std::endl;
+            return false;
+        }
+    }
+     bool signatureValid = true;
 
-    for (size_t i = 0; i < s.size(); ++i) {
-        left.push_back((pow_module(y, r, p) * pow_module(r, s[i], p)) % p);
-        right.push_back(pow_module(g, hash_vt[i], p));
+    for (size_t i = 0; i < hash_vt.size(); ++i) {
+        long long h = hash_vt[i];
+        long long h_inv = modularInverse(h, q); 
+        if (h_inv == -1) {
+            std::cerr << "Error: No modular inverse for h element at index " << i << std::endl;
+            signatureValid = false;
+            continue;
+        }
+
+        long long u1 = (s[i] * h_inv) % q;
+        long long u2 = (-r * h_inv) % q;
+        if (u2 < 0) u2 += q; 
+        long long v = (pow_module(a, u1, p) * pow_module(y, u2, p) % p) % q;
+        if (v != r) {
+            std::cerr << "Signature verification failed for hash element at index " << i << std::endl;
+            signatureValid = false;
+        }
     }
 
-    if (left == right) {
-        std::cout << "Verification successful!" << std::endl;
+    if (signatureValid) {
+        std::cout << "Signature is valid for all hash elements!" << std::endl;
         return true;
     } else {
-        std::cout << "Verification failed." << std::endl;
+        std::cerr << "Signature is invalid." << std::endl;
         return false;
     }
 }
@@ -127,5 +163,14 @@ void test_gost() {
     std::cout << "r = " << r << std::endl;
     for (const auto& it : s) {
         std::cout << it << " ";
+    }
+    std::cout<<std::endl;
+    saveSignatureGost(r, s);
+    //sleep(15);
+    bool isVerified = loadAndVerifySignatureGost(y, g, p, q, a);
+    if (isVerified) {
+        std::cout << "Signature verified successfully!" << std::endl;
+    } else {
+        std::cout << "Signature verification failed." << std::endl;
     }
 }
