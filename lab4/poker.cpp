@@ -8,6 +8,17 @@ void shuffleDeck(std::vector<long long>& deck) {
     std::shuffle(deck.begin(), deck.end(), g);
 }
 
+void distributeCards(std::vector<long long>& deck, std::vector<long long>& playersCards, int playersCount, int countCards) {
+    int cardIndex = 0;
+    for (int i = 0; i < playersCount; i++) {
+        playersCards[i] = deck[cardIndex++];
+    }
+
+    for (int i = 0; i < playersCount; i++) {
+        std::cout << "Player " << i + 1 << " gets card: " << playersCards[i] << std::endl;
+    }
+}
+
 void test_poker(){
     int playersCount;
     int countCards = 52;
@@ -51,8 +62,12 @@ void test_poker(){
         }
         shuffleDeck(deck);
     }
-    
+
+    std::cout << "\nShuffled deck after encryption:" << std::endl;
     for(int i = 0; i < countCards; i++){
         std::cout<<deck[i]<<" ";
     }
+    std::cout<<std::endl;
+    std::vector<long long> playersCards(playersCount); 
+    distributeCards(deck, playersCards, playersCount, countCards);
 }
