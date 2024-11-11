@@ -8,15 +8,27 @@ void shuffleDeck(std::vector<long long>& deck) {
     std::shuffle(deck.begin(), deck.end(), g);
 }
 
-void distributeCards(std::vector<long long>& deck, std::vector<long long>& playersCards, int playersCount, int countCards) {
+void distributeCards(std::vector<long long>& deck, std::vector<std::vector<long long>>& playersCards, int playersCount, int countCards) {
     int cardIndex = 0;
     for (int i = 0; i < playersCount; i++) {
-        playersCards[i] = deck[cardIndex++];
+        playersCards[i].push_back(deck[cardIndex++]);  
+        playersCards[i].push_back(deck[cardIndex++]);  
     }
 
     for (int i = 0; i < playersCount; i++) {
-        std::cout << "Player " << i + 1 << " gets card: " << playersCards[i] << std::endl;
+        std::cout << "Player " << i + 1 << " gets cards: " << playersCards[i][0] << ", " << playersCards[i][1] << std::endl;
     }
+}
+
+long long decryptCard(long long encryptedCard, int playerIndex, const std::vector<long long>& D, int playersCount, long long p) {
+    long long k = encryptedCard;
+    for (int j = 0; j < playersCount; j++) {
+        if (j != playerIndex) {
+            k = pow_module(k, D[j], p);  
+        }
+    }
+    k = pow_module(k, D[playerIndex], p);
+    return k;
 }
 
 void test_poker(){
@@ -68,6 +80,16 @@ void test_poker(){
         std::cout<<deck[i]<<" ";
     }
     std::cout<<std::endl;
-    std::vector<long long> playersCards(playersCount); 
+
+    std::vector<std::vector<long long>> playersCards(playersCount);
     distributeCards(deck, playersCards, playersCount, countCards);
+
+    std::cout << "\nDecrypted cards for each player:" << std::endl;
+    for (int i = 0; i < playersCount; i++) {
+        for (int j = 0; j < 2; j++) { 
+            long long decryptedCard = decryptCard(playersCards[i][j], i, D, playersCount, p);
+            std::cout << "Player " << i + 1 << " decrypted card " << j + 1 << ": " << decryptedCard << std::endl;
+        }
+    }
+
 }
