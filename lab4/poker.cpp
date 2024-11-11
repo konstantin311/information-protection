@@ -31,6 +31,16 @@ long long decryptCard(long long encryptedCard, int playerIndex, const std::vecto
     return k;
 }
 
+std::string cardToString(int card) {
+    const std::vector<std::string> ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+    const std::vector<std::string> suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
+
+    int rankIndex = (card - 2) % 13;
+    int suitIndex = (card - 2) / 13;
+
+    return ranks[rankIndex] + " of " + suits[suitIndex];
+}
+
 void test_poker(){
     int playersCount;
     int countCards = 52;
@@ -88,7 +98,7 @@ void test_poker(){
     for (int i = 0; i < playersCount; i++) {
         for (int j = 0; j < 2; j++) { 
             long long decryptedCard = decryptCard(playersCards[i][j], i, D, playersCount, p);
-            std::cout << "Player " << i + 1 << " decrypted card " << j + 1 << ": " << decryptedCard << std::endl;
+            std::cout << "Player " << i + 1 << " decrypted card " << j + 1 << ": " << decryptedCard << " (" << cardToString(decryptedCard) << ")" <<std::endl;
         }
     }
 
