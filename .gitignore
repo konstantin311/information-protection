@@ -9,4 +9,8 @@
 /lab3/*.txt
 /lab3/*.exe
 /lab3/*.jpg
+/lab4/*.o
+/lab4/*.txt
+/lab4/*.exe
+/lab4/*.jpg
 .vscode

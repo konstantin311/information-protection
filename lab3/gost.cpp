@@ -9,7 +9,6 @@
 #include <iomanip>
 //#include <unistd.h>
 
-
 void saveSignatureGost(long long r, const std::vector<long long>& s) {
     std::ofstream outFile("signature_gost.txt");
     if (outFile.is_open()) {
@@ -100,7 +99,7 @@ void test_gost() {
     long long q; 
     long long p;
     int b;
-    std::uniform_int_distribution<> dist2(2, 10000);
+    std::uniform_int_distribution<> dist2(1, 1000000);
     do{
         do {
         q = dist(gen);
@@ -164,7 +163,6 @@ void test_gost() {
     for (const auto& it : s) {
         std::cout << it << " ";
     }
-    std::cout<<std::endl;
     saveSignatureGost(r, s);
     //sleep(15);
     bool isVerified = loadAndVerifySignatureGost(y, g, p, q, a);
