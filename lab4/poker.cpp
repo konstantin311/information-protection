@@ -1,33 +1,16 @@
 #include "poker.hpp"
+#include <algorithm>
 
-struct Card {
-    std::string suit;
-    std::string rank;
-};
+void shuffleDeck(std::vector<long long>& deck) {
+    std::random_device rd;
+    std::mt19937 g(rd());
 
-std::unordered_map<int, Card> createDeck() {
-    std::unordered_map<int, Card> deck;
-    std::vector<std::string> suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
-    std::vector<std::string> ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
-    
-    int index = 0;
-    for (const auto& suit : suits) {
-        for (const auto& rank : ranks) {
-            deck[index++] = Card{suit, rank};
-        }
-    }
-
-    return deck;
-}
-
-void printDeck(const std::unordered_map<int, Card>& deck) {
-    for (const auto& [key, card] : deck) {
-        std::cout << "Card " << key + 1 << ": " << card.rank << " of " << card.suit << std::endl;
-    }
+    std::shuffle(deck.begin(), deck.end(), g);
 }
 
 void test_poker(){
     int playersCount;
+    int countCards = 52;
     do{
     std::cout<<"Print count players(2..23)"<<std::endl;
     std::cin>>playersCount;
@@ -52,14 +35,24 @@ void test_poker(){
         C[i] = findCoprime(p - 1);
         D[i] = modularInverse(C[i], p - 1);
     }
-    /*for (int i = 0 ; i < playersCount; i++){
-    std::cout<<C[i]<<std::endl;
-    std::cout<<D[i]<<std::endl;
-    }*/
 
+    std::vector<long long> deck(countCards);
+    std::cout<<"Original deck:"<<std::endl;
+    for(int i = 0; i < countCards; i++){
+        deck[i] = i + 2;
+        std::cout<<deck[i]<<" ";
+    }
+
+    long long K;
+    for(int i = 0 ; i < playersCount; i++){
+        for(int j = 0; j < countCards; j++){
+            K = pow_module(deck[j],C[i],p);
+            deck[j] = K;
+        }
+        shuffleDeck(deck);
+    }
     
-    std::unordered_map<int, Card> deck = createDeck();
-    
-    //printDeck(deck);
-    
+    for(int i = 0; i < countCards; i++){
+        std::cout<<deck[i]<<" ";
+    }
 }
