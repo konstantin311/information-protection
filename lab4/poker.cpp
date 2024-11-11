@@ -5,18 +5,25 @@ struct Card {
     std::string rank;
 };
 
-std::vector<Card> createDeck() {
-    std::vector<Card> deck;
+std::unordered_map<int, Card> createDeck() {
+    std::unordered_map<int, Card> deck;
     std::vector<std::string> suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
     std::vector<std::string> ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
-
+    
+    int index = 0;
     for (const auto& suit : suits) {
         for (const auto& rank : ranks) {
-            deck.push_back(Card{suit, rank});
+            deck[index++] = Card{suit, rank};
         }
     }
 
     return deck;
+}
+
+void printDeck(const std::unordered_map<int, Card>& deck) {
+    for (const auto& [key, card] : deck) {
+        std::cout << "Card " << key + 1 << ": " << card.rank << " of " << card.suit << std::endl;
+    }
 }
 
 void test_poker(){
@@ -42,8 +49,17 @@ void test_poker(){
     std::vector<long long> D(playersCount);
     std::uniform_int_distribution<> dist(1 ,p - 1);
     for (int i = 0 ; i < playersCount; i++){
-        C[i] = dist(gen);
-        D[i] = modularInverse(C[i],p-1);
+        C[i] = findCoprime(p - 1);
+        D[i] = modularInverse(C[i], p - 1);
     }
+    /*for (int i = 0 ; i < playersCount; i++){
+    std::cout<<C[i]<<std::endl;
+    std::cout<<D[i]<<std::endl;
+    }*/
 
+    
+    std::unordered_map<int, Card> deck = createDeck();
+    
+    //printDeck(deck);
+    
 }
