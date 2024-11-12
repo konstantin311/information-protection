@@ -67,6 +67,7 @@ void test_poker(){
     for (int i = 0 ; i < playersCount; i++){
         C[i] = findCoprime(p - 1);
         D[i] = modularInverse(C[i], p - 1);
+        std::cout<<"Player "<<i + 1<<":C = "<<C[i]<<" ; D = "<<D[i]<<std::endl;
     }
 
     std::vector<long long> deck(countCards);
