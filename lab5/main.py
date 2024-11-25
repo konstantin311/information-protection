@@ -175,9 +175,21 @@ def test_voting():
     print(f"r = {r}")
     h_ = h * pow_module(r,D,N)
     
-    s = pow_module(h_,C,N)
-    print(f"s = {s}")
+    s_ = pow_module(h_,C,N)
+    print(f"s_ = {s_}")
 
     rneg = modular_inverse(r,N)
     print(f"r^-1 = {rneg}")
+
+    s = s_ * rneg % N
+    print(f"s = {s}")
+
+    proverka = pow_module(s,D,N)
+
+    if proverka == h:
+        print("good")
+    else:
+        print("bad")
+
+
 test_voting()
