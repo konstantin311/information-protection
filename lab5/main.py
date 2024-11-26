@@ -30,14 +30,6 @@ def extended_gcd(a, b):
 
     return u1, u2, u3
 
-def mod(a, b):
-    if b < 0:
-        return -mod(-a, -b)
-    ret = a % b
-    if ret < 0:
-        ret += b
-    return ret
-
 def find_coprime(phi):
     while True:
         candidate = random.randint(2, phi - 1)
@@ -91,22 +83,14 @@ def gen_g(p, q):
             return g
     return -1
 
-def test_ferma(p, k):
-    if p == 2:
-        return True
-    if p & 1 == 0:
-        return False
-    for _ in range(k):
-        a = random.randint(1, p - 1)
-        if gcd(a, p) != 1 or pow_module(a, p - 1, p) != 1:
-            return False
-    return True
-
-def generate_random_prime():
+def generate_prime(bits):
+    """Генерирует простое число заданной длины в битах."""
     while True:
-        p = random.randint(1000000, 1000000000)
-        if test_ferma(p, 100):
-            return p
+        candidate = random.getrandbits(bits)  
+        candidate |= (1 << bits - 1) | 1      
+        if miller_rabin_test(candidate, 100):  
+            return candidate
+
 
 def generate_rsa_keys(phi):
     while True:
@@ -118,30 +102,27 @@ def generate_rsa_keys(phi):
                 d += phi
             return (c, phi), (d, phi)
         
-# Функция для генерации случайного числа заданной длины в битах
 def generate_random_number(bits):
     return random.getrandbits(bits)
 
-# Функция для вычисления криптографической хэш-функции SHA3
 def compute_sha3_hash(n):
-    # Преобразуем число в строку и хэшируем его
-    n_bytes = n.to_bytes((n.bit_length() + 7) // 8, byteorder='big')  # Преобразуем число в байты
-    return int(hashlib.sha3_256(n_bytes).hexdigest(), 16)  # Возвращаем хэш как целое число
+    n_bytes = n.to_bytes((n.bit_length() + 7) // 8, byteorder='big')  
+    return int(hashlib.sha3_256(n_bytes).hexdigest(), 16)  
 
-# Функция для вычисления криптографической хэш-функции SHA3 и проверки условия h < N
 def calculate_h(n, N):
     h = compute_sha3_hash(n)
     if h >= N:
-        return h % N  # Если хэш больше, берем остаток от деления
+        return h % N  
     return h
 
 def test_voting():
+    print(f"SERVER")
+    q = generate_prime(256)
     while True:
-        q = random.randint(32768, 65535)
-        if miller_rabin_test(q, 100):
-            p = 2 * q + 1
-            if miller_rabin_test(p, 100):
-                break
+        p = 2 * q + 1
+        if miller_rabin_test(p, 100): 
+            break
+        q = generate_prime(256) 
 
     print(f"q = {q}")
     print(f"p = {p}")
@@ -156,18 +137,18 @@ def test_voting():
     print(f"C = {C}")
     print(f"D = {D}")
 
-    rnd = generate_random_number(512)
+    print(f"\nALISA")
+
+    rnd = generate_random_number(128)
     print(f"rnd = {rnd}")
 
-    # Формирование числа v (например, для голосования "Да" = 1, "Нет" = 0)
-    v = random.choice([0, 1])  # Пример: результат голосования Да/Нет
+    # Формирование числа v (например, для голосования "Да" = 1, "Нет" = 0 "Воздержался" = 2)
+    v = random.choice([0, 1, 2]) 
     print(f"v = {v}")
-    v_bits = v  # Для упрощения, просто используем 1 или 0, но можно закодировать больше информации
+    v_bits = v  
 
-    # Конкатенация rnd и v, получается число n
-    n = (rnd << 1) | v  # Сдвигаем rnd на 1 бит влево и добавляем v как младший бит
-
-    # Получение хэша от числа n
+    n = (rnd << 2) | v  
+    print(f"n = {n}")
     h = calculate_h(n, N)
     print(f"Hash h = {h}")
     
@@ -175,21 +156,26 @@ def test_voting():
     print(f"r = {r}")
     h_ = h * pow_module(r,D,N)
     
+    print(f"\nSERVER")
     s_ = pow_module(h_,C,N)
     print(f"s_ = {s_}")
 
+    print(f"\nALISA")
     rneg = modular_inverse(r,N)
     print(f"r^-1 = {rneg}")
 
     s = s_ * rneg % N
     print(f"s = {s}")
-
+    print(f"\nОтправляем на сервер <n,s>\n")
     proverka = pow_module(s,D,N)
+    print(f"proverka = {proverka}")
+    h = calculate_h(n, N)
+    print(f"Hash h = {h}")
 
     if proverka == h:
-        print("good")
+        print("Значения совпадают, все хорошо!")
     else:
-        print("bad")
+        print("Значения не совпадают, все плохо!")
 
 
 test_voting()
