@@ -66,9 +66,22 @@ void test_color_cycle() {
     std::uniform_int_distribution<> dist(32500,45000);
     std::cout << std::endl;
     long long r;
-    for (const auto& vertex : V) {
-        r = dist(gen);
-        std::cout<<"r = "<< r << std::endl;
+    for (auto& vertex : V) {
+        r = dist(gen); // Generate random r
+        std::cout << "r (before modification) = " << r << std::endl;
+
+        // Modify last 2 bits based on the color of the vertex
+        if (vertex.second == 'r') {
+            r &= ~3; // Clear the last 2 bits (00)
+        } else if (vertex.second == 'b') {
+            r &= ~3; // Clear the last 2 bits
+            r |= 1;  // Set the last 2 bits to 01
+        } else if (vertex.second == 'y') {
+            r &= ~3; // Clear the last 2 bits
+            r |= 2;  // Set the last 2 bits to 10
+        }
+
+        std::cout << "r (after modification) = " << r << std::endl;
         R.push_back(r);
     }
 
