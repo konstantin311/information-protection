@@ -17,4 +17,8 @@
 /lab5/*.txt
 /lab5/*.exe
 /lab5/*.jpg
+/rgr/*.o
+/rgr/*.txt
+/rgr/*.exe
+/rgr/*.jpg
 .vscode
