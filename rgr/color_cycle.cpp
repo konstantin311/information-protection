@@ -60,4 +60,17 @@ void test_color_cycle() {
         std::cout << "Vertices: " << pair.first << ", Color: " << pair.second << std::endl;
     }
 
+    std::vector<long long> R;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(32500,45000);
+    std::cout << std::endl;
+    long long r;
+    for (const auto& vertex : V) {
+        r = dist(gen);
+        std::cout<<"r = "<< r << std::endl;
+        R.push_back(r);
+    }
+    
+
 }
