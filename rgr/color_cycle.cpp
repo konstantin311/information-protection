@@ -68,17 +68,15 @@ void test_color_cycle() {
     long long r;
     for (auto& vertex : V) {
         r = dist(gen); // Generate random r
-        std::cout << "r (before modification) = " << r << std::endl;
-
-        // Modify last 2 bits based on the color of the vertex
+        //std::cout << "r (before modification) = " << r << std::endl;
         if (vertex.second == 'r') {
-            r &= ~3; // Clear the last 2 bits (00)
+            r &= ~3; 
         } else if (vertex.second == 'b') {
-            r &= ~3; // Clear the last 2 bits
-            r |= 1;  // Set the last 2 bits to 01
+            r &= ~3; 
+            r |= 1;  
         } else if (vertex.second == 'y') {
-            r &= ~3; // Clear the last 2 bits
-            r |= 2;  // Set the last 2 bits to 10
+            r &= ~3; 
+            r |= 2; 
         }
 
         std::cout << "r (after modification) = " << r << std::endl;
@@ -91,7 +89,8 @@ void test_color_cycle() {
     for (const auto& vertex : V) {
         do {
             do {
-                q = generateRandomPrime();
+                //q = generateRandomPrime();
+                q = dist(gen);
             } while (!millerRabinTest(q, 100));
             p = 2 * q + 1;
         } while (!millerRabinTest(p, 100));
@@ -109,6 +108,23 @@ void test_color_cycle() {
         d = keys.second.first;
         C.push_back(c);
         D.push_back(d);
+        std::cout<<"C = "<<c<<" D = "<<d<<std::endl;
+    }
+
+    std::cout<<std::endl;
+    std::vector<long long> Z;
+    long long z;
+    for (size_t i = 0; i < R.size(); ++i) {
+        r = R[i];
+        d = D[i];
+        n = N[i];
+        std::cout<<"R = "<<r<<" d= "<<d<<" n="<<n<<std::endl;
+        z = pow_module(r, d, n); 
+        if(z<0){
+            z = z + n;
+        }
+        std::cout << "z = " << z << " for vertex " << V[i].first << std::endl;
+        Z.push_back(z); 
     }
 
 }
