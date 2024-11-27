@@ -25,3 +25,5 @@ int findCoprime(int phi);
 long long mod(long long a, long long b);
 
 int modularInverse(int a, int m);
+
+std::pair<std::pair<long long, long long>, std::pair<long long, long long>> generate_rsa_keys(long long phi);

@@ -145,3 +145,22 @@ int generateRandomPrime() {
     } while(testFerma(p,100));
     return p;
 }
+
+std::pair<std::pair<long long, long long>, std::pair<long long, long long>> generate_rsa_keys(long long phi) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(2, phi - 1);
+
+    while (true) {
+        long long c = distrib(gen);
+        long long gcd, d, _;
+        std::tie(gcd, d, _) = extendedGCD(c, phi);
+        if (gcd == 1) {
+            d %= phi;
+            if (d < 0) {
+                d += phi;
+            }
+            return std::make_pair(std::make_pair(c, phi), std::make_pair(d, phi)); 
+        }
+    }
+}
