@@ -71,6 +71,21 @@ void test_color_cycle() {
         std::cout<<"r = "<< r << std::endl;
         R.push_back(r);
     }
-    
+
+    std::vector<long long> P,Q,C,D,N;
+    long long p,q;
+
+    for (const auto& vertex : V) {
+        do {
+            do {
+                q = generateRandomPrime();
+            } while (!millerRabinTest(q, 100));
+            p = 2 * q + 1;
+        } while (!millerRabinTest(p, 100));
+        std::cout << "q = " << q << std::endl;
+        std::cout << "p = " << p << std::endl;
+        Q.push_back(q);
+        P.push_back(p);
+    }
 
 }
