@@ -8,7 +8,7 @@ CXX = g++
 CXXFLAGS = -Wall
 
 # Все исходные файлы
-SOURCES = rgr.cpp lab1_lib.cpp 
+SOURCES = rgr.cpp lab1_lib.cpp color_cycle.cpp
 
 # Объектные файлы (с заменой .cpp на .o)
 OBJECTS = $(SOURCES:.cpp=.o)
