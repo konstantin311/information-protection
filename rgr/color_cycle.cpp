@@ -25,6 +25,18 @@ void processGraphFile(const std::string& filename, std::vector<std::pair<int, ch
     }
 }
 
+void updateColors(std::vector<std::pair<int, char>>& V) {
+    for (auto& vertex : V) {
+        if (vertex.second == 'r') {
+            vertex.second = 'y';
+        } else if (vertex.second == 'b') {
+            vertex.second = 'r';
+        } else if (vertex.second == 'y') {
+            vertex.second = 'b';
+        }
+    }
+}
+
 void test_color_cycle() {
     const std::string filename = "correct_graph.txt"; 
     std::vector<std::pair<int, char>> V;     
@@ -41,4 +53,11 @@ void test_color_cycle() {
     for (const auto& edge : E) {
         std::cout << "Edge: " << edge.first << " - " << edge.second << std::endl;
     }
+
+    std::cout << "\nAlisa:"<<std::endl;
+    updateColors(V);
+    for (const auto& pair : V) {
+        std::cout << "Vertices: " << pair.first << ", Color: " << pair.second << std::endl;
+    }
+
 }
