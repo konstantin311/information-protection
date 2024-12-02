@@ -132,14 +132,14 @@ void calculateZValues(const std::vector<long long>& R,
     }
 }
 
-void testEdgeCheck(const std::vector<std::pair<int, int>>& E, 
+bool testEdgeCheck(const std::vector<std::pair<int, int>>& E, 
                    const std::vector<long long>& Z, 
                    const std::vector<long long>& C, 
                    const std::vector<long long>& N) {
    
     if (E.empty()) {
         std::cout << "No edges to test." << std::endl;
-        return;
+        return false;
     }
 
     std::random_device rd;
@@ -165,8 +165,10 @@ void testEdgeCheck(const std::vector<std::pair<int, int>>& E,
 
     if (lowerBitsZ1_ != lowerBitsZ2_) {
         std::cout << "Good: Lower bits of Z1_ and Z2_ are different." << std::endl;
+        return true;
     } else {
         std::cout << "Error: Lower bits of Z1_ and Z2_ are the same." << std::endl;
+        return false;
     }
 }
 
@@ -210,13 +212,18 @@ void test_color_cycle() {
         std::cout << "\nAlisa step 3:"<<std::endl;
         generateKeysAndValues(V, P, Q, N, C, D);
 
-        //std::cout<<std::endl;
         std::vector<long long> Z;
         std::cout << "\nAlisa step 4:"<<std::endl;
         calculateZValues(R, D, N, V, Z);
 
         std::cout << "\nBob checks for cheating"<<std::endl;
         
-        testEdgeCheck(E, Z, C, N);
+        if (testEdgeCheck(E, Z, C, N) == true){
+            continue;
+        }
+        else { 
+            std::cout << "Alice deceived us" << std::endl;
+            break;
+        }
     }
 }
