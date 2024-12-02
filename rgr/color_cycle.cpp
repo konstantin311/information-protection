@@ -26,15 +26,32 @@ void processGraphFile(const std::string& filename, std::vector<std::pair<int, ch
 }
 
 void updateColors(std::vector<std::pair<int, char>>& V) {
-    for (auto& vertex : V) {
-        if (vertex.second == 'r') {
-            vertex.second = 'y';
-        } else if (vertex.second == 'b') {
-            vertex.second = 'r';
-        } else if (vertex.second == 'y') {
-            vertex.second = 'b';
+    int choise;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distchoise(0, 1);
+    choise = distchoise(gen);
+    if(choise == 0){
+        for (auto& vertex : V) {
+            if (vertex.second == 'r') {
+                vertex.second = 'y';
+            } else if (vertex.second == 'b') {
+                vertex.second = 'r';
+            } else if (vertex.second == 'y') {
+                vertex.second = 'b';
+            }
         }
-    }
+    } else {
+        for (auto& vertex : V) {
+            if (vertex.second == 'r') {
+                vertex.second = 'b';
+            } else if (vertex.second == 'b') {
+                vertex.second = 'y';
+            } else if (vertex.second == 'y') {
+                vertex.second = 'r';
+            }
+        }
+    } 
 }
 
 long long generateR(char color, std::mt19937& gen, std::uniform_int_distribution<>& dist) {
@@ -76,7 +93,7 @@ void generateKeysAndValues(const std::vector<std::pair<int, char>>& V,
         
         n = p * q;
         phi = (p - 1) * (q - 1);
-
+        std::cout<<"Vertex number "<<vertex.first<<std::endl;
         std::cout << "q = " << q << std::endl;
         std::cout << "p = " << p << std::endl;
         std::cout << "n = " << n << std::endl;
@@ -93,7 +110,7 @@ void generateKeysAndValues(const std::vector<std::pair<int, char>>& V,
         C.push_back(c);
         D.push_back(d);
 
-        std::cout << "C = " << c << " D = " << d << std::endl;
+        std::cout << "C = " << c << " D = " << d << std::endl<< std::endl;
     }
 }
 
@@ -106,7 +123,7 @@ void calculateZValues(const std::vector<long long>& R,
         long long r = R[i];
         long long d = D[i];
         long long n = N[i];
-        std::cout << "R = " << r << " d = " << d << " n = " << n << std::endl;
+        std::cout << r << " ^ " << d << " mod " << n <<" = ";
 
         long long z = pow_module(r, d, n);
         std::cout << "z = " << z << " for vertex " << V[i].first << std::endl;
@@ -171,30 +188,35 @@ void test_color_cycle() {
         std::cout << "Edge: " << edge.first << " - " << edge.second << std::endl;
     }
 
-    std::cout << "\nAlisa:"<<std::endl;
-    updateColors(V);
-    for (const auto& pair : V) {
-        std::cout << "Vertices: " << pair.first << ", Color: " << pair.second << std::endl;
-    }
-
-    std::vector<long long> R;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(32500,45000);
-    std::cout << std::endl;
-    for (auto& vertex : V) {
-       R.push_back(generateR(vertex.second, gen, dist));
-    }
-
-    std::vector<long long> P,Q,C,D,N;
-    generateKeysAndValues(V, P, Q, N, C, D);
-
-    std::cout<<std::endl;
-    std::vector<long long> Z;
-    calculateZValues(R, D, N, V, Z);
-
     int a = 10;
     for(int i = 0; i < a; i++){
+        std::cout << "\033[31mVerification number: " << i + 1 << "\033[0m" << std::endl; 
+        std::cout << "\nAlisa step 1:"<<std::endl;
+        updateColors(V);
+        for (const auto& pair : V) {
+            std::cout << "Vertices: " << pair.first << ", Color: " << pair.second << std::endl;
+        }
+
+        std::vector<long long> R;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(32500,45000);
+        std::cout << "\nAlisa step 2:"<<std::endl;
+        for (auto& vertex : V) {
+        R.push_back(generateR(vertex.second, gen, dist));
+        }
+
+        std::vector<long long> P,Q,C,D,N;
+        std::cout << "\nAlisa step 3:"<<std::endl;
+        generateKeysAndValues(V, P, Q, N, C, D);
+
+        //std::cout<<std::endl;
+        std::vector<long long> Z;
+        std::cout << "\nAlisa step 4:"<<std::endl;
+        calculateZValues(R, D, N, V, Z);
+
+        std::cout << "\nBob checks for cheating"<<std::endl;
+        
         testEdgeCheck(E, Z, C, N);
     }
 }
